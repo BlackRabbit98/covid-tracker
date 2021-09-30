@@ -1,4 +1,10 @@
-import { FormControl, MenuItem, Select } from '@material-ui/core';
+import {
+	Card,
+	CardContent,
+	FormControl,
+	MenuItem,
+	Select,
+} from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import './App.css';
 import InfoBox from './components/InfoBox';
@@ -7,7 +13,18 @@ import Map from './components/Map';
 const App = () => {
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState('worldwide');
+	const [countryInfo, setCountryInfo] = useState({});
 
+	//initial loading of worldwide cases
+	useEffect(() => {
+		fetch('https://disease.sh/v3/covid-19/all')
+			.then((response) => response.json())
+			.then((data) => {
+				setCountryInfo(data);
+			});
+	}, []);
+
+	//drop down menu
 	useEffect(() => {
 		const getCountryData = async () => {
 			await fetch('https://disease.sh/v3/covid-19/countries')
@@ -24,39 +41,76 @@ const App = () => {
 		getCountryData();
 	}, []);
 
+	//data after drop-down country change event
 	const onCountryChange = async (event) => {
 		const countryCode = event.target.value;
 		setCountry(countryCode);
+
+		const url =
+			countryCode === 'worldwide'
+				? 'https://disease.sh/v3/covid-19/all'
+				: `https://disease.sh/v3/covid-19/countries/${countryCode}`;
+
+		await fetch(url)
+			.then((response) => response.json())
+			.then((data) => {
+				setCountry(countryCode);
+				setCountryInfo(data);
+
+				// console.log('countryCode', countryCode);
+				console.log('countryInfo', countryInfo);
+			});
 	};
 
 	return (
-		<div className="App">
-			<div className="app__header">
-				<h1>COVID-19 TRACKER</h1>
-				<FormControl className="app__dropdown">
-					<Select
-						variant="outlined"
-						onChange={onCountryChange}
-						value={country}>
-						{/* loop through all the countries and 
+		<div className="app">
+			<div className="app__left">
+				<div className="app__header">
+					<h1>COVID-19 TRACKER</h1>
+					<FormControl className="app__dropdown">
+						<Select
+							variant="outlined"
+							onChange={onCountryChange}
+							value={country}>
+							{/* loop through all the countries and 
           show drop down list */}
-						<MenuItem value="worldwide">Worldwide</MenuItem>
-						{countries.map((country) => (
-							<MenuItem value={country.value}>
-								{country.name}
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
+							<MenuItem value="worldwide">Worldwide</MenuItem>
+							{countries.map((country) => (
+								<MenuItem value={country.value}>
+									{country.name}
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+				</div>
+
+				<div className="app__stats">
+					<InfoBox
+						title="Coronavirus Cases"
+						cases={countryInfo.todayCases}
+						total={countryInfo.cases}
+					/>
+					<InfoBox
+						title="Recovered"
+						cases={countryInfo.todayRecovered}
+						total={countryInfo.recovered}
+					/>
+					<InfoBox
+						title="Deaths"
+						cases={countryInfo.todayDeaths}
+						total={countryInfo.deaths}
+					/>
+				</div>
+
+				<Map />
 			</div>
 
-			<div className="app__stats">
-				<InfoBox title="Coronavirus Cases" cases={23123} total={3213} />
-				<InfoBox title="Recovered" cases={312} total={1} />
-				<InfoBox title="Deaths" cases={1} total={1} />
-			</div>
-
-			<Map />
+			<Card className="app__right">
+				<CardContent>
+					<h3>Live Cases by Country</h3>
+					<h3>Worldwide new cases</h3>
+				</CardContent>
+			</Card>
 		</div>
 	);
 };

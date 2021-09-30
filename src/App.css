@@ -3,7 +3,13 @@
 }
 
 body {
-	background-color: gray;
+	background-color: rgb(241, 238, 238);
+}
+
+.app {
+	display: flex;
+	justify-content: space-evenly;
+	padding: 20px;
 }
 
 .app__header {
@@ -13,7 +19,17 @@ body {
 	margin-bottom: 20px;
 }
 
+.app__left {
+	flex: 0.9;
+}
+
 .app__stats {
 	display: flex;
 	justify-content: space-between;
+}
+
+@media (max-width: 890px) {
+	.app {
+		flex-direction: column;
+	}
 }
