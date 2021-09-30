@@ -9,11 +9,15 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import InfoBox from './components/InfoBox';
 import Map from './components/Map';
+import Table from './components/Table';
+import LineGraph from './components/LineGraph';
+import { sortData } from './util';
 
 const App = () => {
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState('worldwide');
 	const [countryInfo, setCountryInfo] = useState({});
+	const [tableData, setTableData] = useState([]);
 
 	//initial loading of worldwide cases
 	useEffect(() => {
@@ -36,6 +40,9 @@ const App = () => {
 					}));
 
 					setCountries(countries);
+
+					const sortedData = sortData(data);
+					setTableData(sortedData);
 				});
 		};
 		getCountryData();
@@ -75,8 +82,8 @@ const App = () => {
 							{/* loop through all the countries and 
           show drop down list */}
 							<MenuItem value="worldwide">Worldwide</MenuItem>
-							{countries.map((country) => (
-								<MenuItem value={country.value}>
+							{countries.map((country, index) => (
+								<MenuItem key={index} value={country.value}>
 									{country.name}
 								</MenuItem>
 							))}
@@ -108,7 +115,9 @@ const App = () => {
 			<Card className="app__right">
 				<CardContent>
 					<h3>Live Cases by Country</h3>
+					<Table countries={tableData} />
 					<h3>Worldwide new cases</h3>
+					<LineGraph />
 				</CardContent>
 			</Card>
 		</div>
