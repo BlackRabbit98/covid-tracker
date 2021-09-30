@@ -9,10 +9,6 @@
 	width: 100%;
 }
 
-.table::-webkit-scrollbar {
-	display: none;
-}
-
 .table tr {
 	display: flex;
 	justify-content: space-between;
