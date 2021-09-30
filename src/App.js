@@ -12,12 +12,18 @@ import Map from './components/Map';
 import Table from './components/Table';
 import LineGraph from './components/LineGraph';
 import { sortData } from './util';
+import 'leaflet/dist/leaflet.css';
 
 const App = () => {
 	const [countries, setCountries] = useState([]);
 	const [country, setCountry] = useState('worldwide');
 	const [countryInfo, setCountryInfo] = useState({});
 	const [tableData, setTableData] = useState([]);
+	const [mapCenter, setMapCenter] = useState({
+		lat: 34.80746,
+		lng: -40.4796,
+	});
+	const [mapZoom, setMapZoom] = useState(3);
 
 	//initial loading of worldwide cases
 	useEffect(() => {
@@ -109,7 +115,7 @@ const App = () => {
 					/>
 				</div>
 
-				<Map />
+				<Map center={mapCenter} zoom={mapZoom} />
 			</div>
 
 			<Card className="app__right">
